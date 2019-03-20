@@ -3,14 +3,27 @@ const express = require('express');
 const uuid = require('uuid/v4');
 const logger = require('../logger');
 const { bookmarks } = require('../store');
+const BookmarksService = require('./bookmarks-service')
 
 const bookmarksRouter = express.Router();
 const bodyParser = express.json();
 
+const serializeBookmark = bookmark => ({
+  id: bookmark.id,
+  title: bookmark.title,
+  url: bookmark.url,
+  description: bookmark.description,
+  rating: Number(bookmark.rating),
+})
+
 bookmarksRouter
   .route('/bookmarks')
-  .get((req, res) => {
-    res.json(bookmarks);
+  .get((req, res, next) => {
+    BookmarksService.getAllBookmarks(req.app.get('db'))
+      .then(bookmarks => {
+        res.json(bookmarks.map(serializeBookmark))
+      })
+      .catch(next)
   })
   .post(bodyParser, (req, res) => {
     const { title, url, description, rating } = req.body;
