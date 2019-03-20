@@ -4,4 +4,4 @@ const BookmarkService = {
     }
 }
 
-module.exports = ArticlesService
+module.exports = BookmarkService
